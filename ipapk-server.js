@@ -268,7 +268,7 @@ function parseAppAndInsertToDb(filePath, changelog, callback, errorCallback) {
     info["guid"] = guid
     info["changelog"] = changelog
     excuteDB("INSERT INTO info (guid, platform, build, bundleID, version, name, changelog) VALUES (?, ?, ?, ?, ?, ?, ?);",
-    [info["guid"], info["platform"], info["build"], info["bundleID"], info["version"], info["name"], changelog],function(error){
+    [info["guid"], info["platform"], info["build"], info["bundleID"] + "." info["name"], info["version"], info["name"], changelog],function(error){
         if (!error){
           callback(info)
         } else {
