@@ -14,7 +14,7 @@ var strftime = require('strftime');
 var underscore = require('underscore');
 var os = require('os');
 var multiparty = require('multiparty');
-var sqlite3 = require('sqlite3');  
+var sqlite3 = require('sqlite3');
 var uuidV4 = require('uuid/v4');
 var extract = require('ipa-extract-info');
 var apkParser3 = require("apk-parser3");
@@ -65,7 +65,7 @@ createFolderIfNeeded(ipasDir)
 createFolderIfNeeded(apksDir)
 createFolderIfNeeded(iconsDir)
 function createFolderIfNeeded (path) {
-  if (!fs.existsSync(path)) {  
+  if (!fs.existsSync(path)) {
     fs.mkdirSync(path, function (err) {
         if (err) {
             console.log(err);
@@ -149,12 +149,13 @@ function main() {
   app.use('/ipa', express.static(ipasDir));
   app.use('/apk', express.static(apksDir));
   app.use('/icon', express.static(iconsDir));
+
   app.get(['/apps/:platform', '/apps/:platform/:page'], function(req, res, next) {
   	  res.set('Access-Control-Allow-Origin','*');
       res.set('Content-Type', 'application/json');
       var page = parseInt(req.params.page ? req.params.page : 1);
       if (req.params.platform === 'android' || req.params.platform === 'ios') {
-        queryDB("select * from info where platform=? group by bundleID order by uploadTime desc limit ?,?", [req.params.platform, (page - 1) * pageCount, page * pageCount], function(error, result) {
+        queryDB("select * from info where platform=? group by name order by uploadTime desc limit ?,?", [req.params.platform, (page - 1) * pageCount, page * pageCount], function(error, result) {
           if (result) {
             res.send(mapIconAndUrl(result))
           } else {
@@ -164,12 +165,12 @@ function main() {
       }
   });
 
-  app.get(['/apps/:platform/:bundleID', '/apps/:platform/:bundleID/:page'], function(req, res, next) {
+  app.get(['/apps/:platform/:name', '/apps/:platform/:name/:page'], function(req, res, next) {
   	  res.set('Access-Control-Allow-Origin','*');
       res.set('Content-Type', 'application/json');
       var page = parseInt(req.params.page ? req.params.page : 1);
       if (req.params.platform === 'android' || req.params.platform === 'ios') {
-        queryDB("select * from info where platform=? and bundleID=? order by uploadTime desc limit ?,? ", [req.params.platform, req.params.bundleID, (page - 1) * pageCount, page * pageCount], function(error, result) {
+        queryDB("select * from info where platform=? and name=? order by uploadTime desc limit ?,? ", [req.params.platform, req.params.name, (page - 1) * pageCount, page * pageCount], function(error, result) {
           if (result) {
             res.send(mapIconAndUrl(result))
           } else {
@@ -353,7 +354,7 @@ function extractApkIcon(filename,guid) {
 
       iconPath = iconPath.replace(/'/g,"")
       var tmpOut = iconsDir + "/{0}.png".format(guid)
-      var zip = new AdmZip(filename); 
+      var zip = new AdmZip(filename);
       var ipaEntries = zip.getEntries();
       var found = false
       ipaEntries.forEach(function(ipaEntry) {
@@ -361,8 +362,8 @@ function extractApkIcon(filename,guid) {
           var buffer = new Buffer(ipaEntry.getData());
           if (buffer.length) {
             found = true
-            fs.writeFile(tmpOut, buffer,function(err){  
-              if(err){  
+            fs.writeFile(tmpOut, buffer,function(err){
+              if(err){
                   reject(err)
               }
               resolve({"success":true})
@@ -380,7 +381,7 @@ function extractApkIcon(filename,guid) {
 function extractIpaIcon(filename,guid) {
   return new Promise(function(resolve,reject){
     var tmpOut = iconsDir + "/{0}.png".format(guid)
-    var zip = new AdmZip(filename); 
+    var zip = new AdmZip(filename);
     var ipaEntries = zip.getEntries();
     var exeName = '';
     if (process.platform == 'darwin') {
@@ -394,15 +395,15 @@ function extractIpaIcon(filename,guid) {
         found = true;
         var buffer = new Buffer(ipaEntry.getData());
         if (buffer.length) {
-          fs.writeFile(tmpOut, buffer,function(err){  
-            if(err){  
+          fs.writeFile(tmpOut, buffer,function(err){
+            if(err){
               reject(err)
             } else {
               var execResult = exec(path.join(__dirname, 'bin', exeName + ' -s _tmp ') + ' ' + tmpOut)
               if (execResult.stdout.indexOf('not an -iphone crushed PNG file') != -1) {
                 resolve({"success":true})
               } else {
-                fs.remove(tmpOut,function(err){  
+                fs.remove(tmpOut,function(err){
                   if(err){
                     reject(err)
                   } else {
