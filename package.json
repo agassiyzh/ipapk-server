@@ -1,6 +1,6 @@
 {
   "name": "ipapk-server",
-  "version": "0.2.6",
+  "version": "0.2.9",
   "description": "Create a HTTPS Server to install ipa and apk locally",
   "dependencies": {
     "adm-zip": "^0.4.7",
@@ -21,9 +21,9 @@
   "bin": {
     "ipapk-server": "ipapk-server.js"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node install.js"
   },
   "repository": {
     "type": "git",

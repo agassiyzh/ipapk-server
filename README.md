@@ -4,16 +4,23 @@
 # 支持
 * OS X
 * Ubuntu
-* CentOS
+* CentOS 7
 * 其他平台未测试
 
 # 需要
 * [nodejs](https://nodejs.org/)
+* gcc
 
 # 安装
 ```
 $ npm install -g ipapk-server
 ```
+
+国内可能无法访问S3，使用淘宝镜像下载预编译的sqlite3（Ubuntu下镜像无效）
+```
+$ npm install -g ipapk-server --node_sqlite3_binary_host_mirror=https://npm.taobao.org/mirrors
+```
+
 Ubuntu 64 bit 需要另外安装
 
 ```
@@ -21,7 +28,7 @@ sudo apt-get install libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5
 sudo apt-get install lib32z1
 ```
 
-CentOS 64 bit 需要另外安装
+CentOS 7 64 bit 需要另外安装
 
 ```
  yum install zlib.i686 libstdc++.i686
