@@ -33,7 +33,7 @@
                 <span class="platform_title" v-on:click="switchPlatform" v-bind:class="{ selected_title: selected_paltform === 'android' }">Android</span>
             </span>
             <ul class="app_list">
-                <li v-for="app in apps" :bundle-id="app.bundleID"  v-on:click="viewAllVersion">
+                <li v-for="app in apps" :name="app.name"  v-on:click="viewAllVersion">
                     <div class="app_info">
                         <img :src="app.icon">
                         <div class="info_box">

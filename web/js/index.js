@@ -25,7 +25,7 @@ var main = new Vue({
 	        });
 		},
 		viewAllVersion: function (e) {
-			window.location.href += "versionlist.html?platform=" + this.selected_paltform + "&bundleID=" + e.currentTarget.getAttribute('bundle-id')
+			window.location.href += "versionlist.html?platform=" + this.selected_paltform + "&name=" + e.currentTarget.getAttribute('name')
 		}
 	}
 });
@@ -42,7 +42,9 @@ new Vue({
 });
 
 main.selected_paltform = 'ios';
+
 main.loadApps()
+
 new QRCode(document.getElementsByClassName('qrcode_pic')[0], {
 	text: location.href,
 	width: 160,
