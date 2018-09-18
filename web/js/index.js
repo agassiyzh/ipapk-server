@@ -25,7 +25,7 @@ var main = new Vue({
 	        });
 		},
 		viewAllVersion: function (e) {
-			window.location.href += "versionlist.html?platform=" + this.selected_paltform + "&bundleID=" + e.currentTarget.getAttribute('bundle-id')
+			window.location.href += "versionlist.html?platform=" + this.selected_paltform + "&featureName=" + e.currentTarget.getAttribute('feature-name')
 		}
 	}
 });

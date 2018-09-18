@@ -96,7 +96,8 @@ excuteDB("CREATE TABLE IF NOT EXISTS info (\
   name TEXT,\
   uploadTime datetime default (datetime('now', 'localtime')),\
   platform TEXT,\
-  changelog TEXT\
+  changelog TEXT,\
+  featureName TEXT\
   )");
 /**
  * Main program.
@@ -154,9 +155,10 @@ function main() {
       res.set('Content-Type', 'application/json');
       var page = parseInt(req.params.page ? req.params.page : 1);
       if (req.params.platform === 'android' || req.params.platform === 'ios') {
-        queryDB("select * from info where platform=? group by bundleID order by uploadTime desc limit ?,?", [req.params.platform, (page - 1) * pageCount, page * pageCount], function(error, result) {
+        queryDB("select * from info where platform=? group by featureName order by uploadTime desc limit ?,?", [req.params.platform, (page - 1) * pageCount, page * pageCount], function(error, result) {
           if (result) {
             res.send(mapIconAndUrl(result))
+            console.log(result)
           } else {
             errorHandler(error, res)
           }
@@ -164,12 +166,12 @@ function main() {
       }
   });
 
-  app.get(['/apps/:platform/:bundleID', '/apps/:platform/:bundleID/:page'], function(req, res, next) {
+  app.get(['/apps/:platform/:featureName', '/apps/:platform/:featureName/:page'], function(req, res, next) {
   	  res.set('Access-Control-Allow-Origin','*');
       res.set('Content-Type', 'application/json');
       var page = parseInt(req.params.page ? req.params.page : 1);
       if (req.params.platform === 'android' || req.params.platform === 'ios') {
-        queryDB("select * from info where platform=? and bundleID=? order by uploadTime desc limit ?,? ", [req.params.platform, req.params.bundleID, (page - 1) * pageCount, page * pageCount], function(error, result) {
+        queryDB("select * from info where platform=? and featureName=? order by uploadTime desc limit ?,? ", [req.params.platform, req.params.featureName, (page - 1) * pageCount, page * pageCount], function(error, result) {
           if (result) {
             res.send(mapIconAndUrl(result))
           } else {
@@ -216,9 +218,16 @@ function main() {
         errorHandler("params error",res)
         return
       }
+      var featureName;
+      if (fields.featureName) {
+        featureName = fields.featureName[0];
+      }else {
+        errorHandler("params error: no featureName", res);
+        return
+      }
       var obj = files.package[0];
       var tmp_path = obj.path;
-      parseAppAndInsertToDb(tmp_path, changelog, info => {
+      parseAppAndInsertToDb(tmp_path, changelog, featureName, info => {
         storeApp(tmp_path, info["guid"], error => {
           if (error) {
             errorHandler(error,res)
@@ -254,7 +263,7 @@ function mapIconAndUrl(result) {
   return items;
 }
 
-function parseAppAndInsertToDb(filePath, changelog, callback, errorCallback) {
+function parseAppAndInsertToDb(filePath, changelog, featureName, callback, errorCallback) {
   var guid = uuidV4();
   var parse, extract
   if (path.extname(filePath) === ".ipa") {
@@ -271,8 +280,9 @@ function parseAppAndInsertToDb(filePath, changelog, callback, errorCallback) {
     var info = values[0]
     info["guid"] = guid
     info["changelog"] = changelog
-    excuteDB("INSERT INTO info (guid, platform, build, bundleID, version, name, changelog) VALUES (?, ?, ?, ?, ?, ?, ?);",
-    [info["guid"], info["platform"], info["build"], info["bundleID"], info["version"], info["name"], changelog],function(error){
+    info["featureName"] = featureName
+    excuteDB("INSERT INTO info (guid, platform, build, bundleID, version, name, changelog, featureName) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+    [info["guid"], info["platform"], info["build"], info["bundleID"], info["version"], info["name"], changelog, featureName],function(error){
         if (!error){
           callback(info)
         } else {

@@ -33,11 +33,11 @@
                 <span class="platform_title" v-on:click="switchPlatform" v-bind:class="{ selected_title: selected_paltform === 'android' }">Android</span>
             </span>
             <ul class="app_list">
-                <li v-for="app in apps" :bundle-id="app.bundleID"  v-on:click="viewAllVersion">
+                <li v-for="app in apps" :feature-name="app.featureName"  v-on:click="viewAllVersion">
                     <div class="app_info">
                         <img :src="app.icon">
                         <div class="info_box">
-                            <span class="app_name">{{app.name}}</span>
+                            <span class="app_name">{{app.featureName}}</span>
                             <span class="version_number">{{app.version}}({{app.build}})</span><br>
                             <span>更新:</span>
                             <span class="update_time">{{app.uploadTime}}</span>

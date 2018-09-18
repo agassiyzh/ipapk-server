@@ -14,14 +14,14 @@ var main = new Vue({
 	el: '.platform_wrapper',
 	data: {
 		selected_paltform: query.platform,
-		bundle_id: query.bundleID,
+		feature_name: query.featureName,
 		page: 1,
 		apps: [],
 		show_load_more_apps_button: true,
 	},
 	methods: {
 		loadApps: function () {
-			axios.get("/apps/"+this.selected_paltform+"/"+this.bundle_id+"/"+this.page).then(response => {
+			axios.get("/apps/"+this.selected_paltform+"/"+this.feature_name+"/"+this.page).then(response => {
 	            this.apps = this.apps.concat(response.data)
 	            this.page++
 	            this.show_load_more_apps_button = response.data.length > 0
